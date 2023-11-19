@@ -1,5 +1,6 @@
-import React, {createContext, useState} from "react";
+import React, {createContext, useEffect, useState} from "react";
 import all_product from '../Components/Assets/all_product'
+import axios from "axios";
 
 export const ShopContext = createContext(null)
 
@@ -16,8 +17,18 @@ const getDefaultCart = ()=> {
 const ShopContextProvider = (props) => {
     
     const [cartItems, setCartItems] = useState(getDefaultCart());
-    
-    console.log(cartItems);
+    const [user, setUser] = useState(null);
+    // console.log(cartItems);
+
+    useEffect(()=> {
+        if(!user) {
+            axios.get('/profile').then(response => {
+                //console.log(response)
+                if(response!== null)
+                setUser(response.data);
+            })
+        }
+    }, [])
 
     const addToCart = (itemId) => {
         setCartItems((prev)=>({...prev,[itemId]:prev[itemId]+1}) )
@@ -31,7 +42,7 @@ const ShopContextProvider = (props) => {
         let totalPrice =0;
         for(const item in cartItems) {
             if(cartItems[item]>0) {
-                let product = all_product.find(i => i.id == item  );
+                let product = all_product.find(i => i.id === item  );
                 totalPrice += (product.new_price*cartItems[item])
             }
         }
@@ -50,7 +61,7 @@ const ShopContextProvider = (props) => {
         return totalQuantity;
     }
 
-    const contextValue = {all_product, cartItems, addToCart, removeFromCart, getTotalPrice, getTotalQuantity};
+    const contextValue = {all_product, cartItems, addToCart, removeFromCart, getTotalPrice, getTotalQuantity, user, setUser};
     return (
         <ShopContext.Provider value={contextValue}>
             {props.children}    

@@ -4,10 +4,11 @@ import logo from '../Assets/logo.png'
 import cart_icon from '../Assets/cart_icon.png'
 import { Link } from 'react-router-dom'
 import { ShopContext } from '../../Context/ShopContext'
+import Account from '../Account/Account'
 export const Navbar = () => {
 
     const [menu, setMenu] = useState("shop");
-    const {getTotalQuantity} = useContext(ShopContext);
+    const {getTotalQuantity, user} = useContext(ShopContext);
   return (
     <div className='navbar'>
         <div className='nav-logo'>
@@ -21,7 +22,9 @@ export const Navbar = () => {
             <li onClick={() => {setMenu("kids")}}><Link style={{textDecoration: 'none'}} to={'/kids'}>Kids</Link> {menu==="kids"?<hr/>:<></>}</li>
         </ul>
         <div className='nav-login-cart'>
-            <Link style={{textDecoration: 'none'}} to={'/login'}><button>Login</button></Link>
+            {user!== null && (<Account user={user} />)}
+            {user === null && (<Link style={{textDecoration: 'none'}} to={'/login'}><button>Login</button></Link>)}
+            
             <Link style={{textDecoration: 'none'}} to={'/cart'}><img src={cart_icon} alt=''/></Link>
             <div className='nav-cart-count'>{getTotalQuantity()}</div>
         </div>
